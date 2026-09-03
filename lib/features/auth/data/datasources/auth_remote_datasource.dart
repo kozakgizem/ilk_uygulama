@@ -1,19 +1,37 @@
-import 'package:ilk_uygulama/features/auth/data/models/user_model.dart';
+import 'package:dio/dio.dart';
+import 'package:ilk_uygulama/core/network/dio_client.dart';
 
-abstract class AuthRemoteDatasource {
-  Future<UserModel> login(String email, String password);
-}
+// Bu sınıf, FastAPI sunucumuzla ağ iletişimini kurarak kimlik doğrulama işlemlerini yönetir.
+class AuthRemoteDataSource {
+  final DioClient dioClient;
 
-class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
-  @override
-  Future<UserModel> login(String email, String password) async {
-    // Şimdilik sahte bir gecikme ve örnek kullanıcı döndürüyoruz (Ağ isteğini simüle ediyoruz)
-    await Future.delayed(const Duration(seconds: 1));
-    
-    if (email == "test@test.com" && password == "123456") {
-      return UserModel(id: '1', email: email);
-    } else {
-      throw Exception('Kullanıcı adı veya şifre hatalı!');
+  // Dio istemcisini dışarıdan alıyoruz (Bağımlılık Enjeksiyonu - Dependency Injection)
+  AuthRemoteDataSource({required this.dioClient});
+
+  // Kullanıcı adı ve şifre alarak /auth/token endpoint'ine POST isteği atan fonksiyon
+  Future<String> login(String username, String password) async {
+    try {
+      // FastAPI OAuth2 şeması standart olarak x-www-form-urlencoded formatında veri bekler
+      final response = await dioClient.dio.post(
+        '/auth/token', // Swagger dokümanındaki giriş uç noktası
+        data: {
+          'username': username,
+          'password': password,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+        ),
+      );
+
+      // Sunucudan başarılı (200 OK) cevap döndüyse token bilgisini alıp dışarı döndürüyoruz
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data['access_token'];
+      } else {
+        throw Exception('Giriş başarısız oldu.');
+      }
+    } catch (e) {
+      // Bağlantı hatası veya yanlış kimlik bilgilerinde hata fırlatıyoruz
+      throw Exception('Bağlantı hatası: $e');
     }
   }
 }

@@ -1,6 +1,5 @@
-import 'package:ilk_uygulama/features/auth/domain/entities/user_entity.dart';
-import 'package:dartz/dartz.dart'; // İleride hata yönetimi için kullanacağız
-
+// Bu arayüz (interface), domain katmanının veri kaynağına nasıl bağlanacağını tanımlar.
 abstract class AuthRepository {
-  Future<Either<Exception, UserEntity>> login(String email, String password);
+  // Kullanıcı adı ve şifre alarak giriş yapmayı ve geriye Token (String) döndürmeyi taahhüt eder
+  Future<String> login(String username, String password);
 }

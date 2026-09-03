@@ -1,13 +1,14 @@
-import 'package:dartz/dartz.dart';
-import 'package:ilk_uygulama/features/auth/domain/entities/user_entity.dart';
 import 'package:ilk_uygulama/features/auth/domain/repositories/auth_repository.dart';
 
+// Use Case, uygulamada tek bir işi yapmaktan sorumludur (Buradaki iş: Giriş Yapmak).
 class LoginUseCase {
   final AuthRepository repository;
 
+  // Repository'yi dışarıdan enjekte alıyoruz
   LoginUseCase(this.repository);
 
-  Future<Either<Exception, UserEntity>> call(String email, String password) async {
-    return await repository.login(email, password);
+  // Bu sınıf doğrudan çağrıldığında (`call` metodu sayesinde) repository'deki login fonksiyonunu tetikler
+  Future<String> call(String username, String password) async {
+    return await repository.login(username, password);
   }
 }
