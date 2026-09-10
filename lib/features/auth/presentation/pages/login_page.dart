@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ilk_uygulama/features/auth/presentation/bloc/auth_cubit.dart';
 import 'package:ilk_uygulama/features/auth/presentation/bloc/auth_state.dart';
+import 'home_page.dart'; // <-- Ana sayfa import edildi
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -20,8 +21,15 @@ class LoginPage extends StatelessWidget {
         child: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
+              // 1. Önce başarı mesajını gösteriyoruz (isteğe bağlı)
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Giriş Başarılı! Token: ${state.token}')),
+                const SnackBar(content: Text('Giriş Başarılı! Yönlendiriliyorsunuz...')),
+              );
+              
+              // 2. Başarılı giriş sonrası Ana Sayfaya yönlendirip geri dönüşü kapatıyoruz
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomePage()),
               );
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(

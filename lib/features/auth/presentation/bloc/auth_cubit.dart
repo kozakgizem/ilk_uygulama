@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ilk_uygulama/features/auth/domain/usecases/login_usecase.dart';
 import 'auth_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // UI ile Domain katmanı arasında köprü kuran Cubit sınıfı
 class AuthCubit extends Cubit<AuthState> {
@@ -17,6 +18,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       // 2. UseCase aracılığıyla FastAPI'den token iste
       final token = await loginUseCase(username, password);
+      // Token'ı cihaz hafızasına kaydetme
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt_token', token);
+
       
       // 3. İstek başarılı olursa token ile birlikte Success durumunu fırlat
       emit(AuthSuccess(token));

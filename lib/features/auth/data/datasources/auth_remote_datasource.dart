@@ -14,10 +14,10 @@ class AuthRemoteDataSource {
       // FastAPI OAuth2 şeması standart olarak x-www-form-urlencoded formatında veri bekler
       final response = await dioClient.dio.post(
         '/auth/token', // Swagger dokümanındaki giriş uç noktası
-        data: {
+        data: FormData.fromMap({
           'username': username,
           'password': password,
-        },
+        }),
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
         ),
