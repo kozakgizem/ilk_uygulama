@@ -1,14 +1,28 @@
+import 'dart:html' as html show window;
 import 'package:flutter/foundation.dart';
-
+import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'api_endpoints.dart';
 class AppConstants {
-  // Dinamik BaseUrl yönetimi
-  static String get baseUrl {
-    // Eğer web ortamında çalışıyorsksa localhost, emülatör veya farklı ortamlar için burası esnetilebilir
-    if (kIsWeb) {
-      return 'http://127.0.0.1:8000';
-    } else {
-      // Android emülatör için özel IP gerekebilir (örn: 10.0.2.2) veya canlı ortam URL'si
-      return 'http://10.0.2.2:8000';
+
+static String get baseUrl {
+  if (kIsWeb) {
+    final host = html.window.location.hostname;
+    final port = html.window.location.port;
+
+    if (host == 'localhost' || host == '127.0.0.1') {
+      return 'http://localhost:8000';
     }
+
+    if (port.isEmpty || port == '80' || port == '443') {
+      return 'http://$host';
+    }
+
+    return 'http://$host:$port';
+  } else {
+    const fallbackIp = 'http://192.168.1.100:8000';
+    return fallbackIp;
   }
+}
+
 }
