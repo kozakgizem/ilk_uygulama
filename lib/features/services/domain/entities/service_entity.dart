@@ -1,11 +1,13 @@
 class ServiceEntity {
   final int id;
-  final String title;
-  final String description;
+  final String name;
+  final int port;
+  final String status;
 
   const ServiceEntity({
     required this.id,
-    required this.title,
-    required this.description,
+    required this.name,
+    required this.port,
+    required this.status,
   });
 }

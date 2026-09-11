@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/constants/api_endpoints.dart'; // Veya direkt URL
+import '../../../../core/constants/api_endpoints.dart';
 import '../models/user_model.dart';
 
 abstract class UserRemoteDataSource {
   Future<List<UserModel>> getUsers();
+  Future<UserModel> getMe(); // Eklendi: Aktif kullanıcı profili için
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -14,13 +15,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<List<UserModel>> getUsers() async {
-    // 1. SharedPreferences'tan kaydedilen token'ı alıyoruz
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
 
-    // 2. Dio ile istek atarken Token'ı Header'a ekliyoruz
     final response = await dio.get(
-      '${ApiEndpoints.baseUrl}/users/', // Kendi FastAPI endpoint adresin
+      '${ApiEndpoints.baseUrl}/users/',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
@@ -33,6 +32,27 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       return data.map((json) => UserModel.fromJson(json)).toList();
     } else {
       throw Exception('Kullanıcılar yüklenemedi');
+    }
+  }
+
+  @override
+  Future<UserModel> getMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+
+    final response = await dio.get(
+      '${ApiEndpoints.baseUrl}/users/me',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data);
+    } else {
+      throw Exception('Kullanıcı bilgileri alınamadı');
     }
   }
 }

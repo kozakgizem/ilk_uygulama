@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ilk_uygulama/features/auth/presentation/bloc/auth_cubit.dart';
 import 'package:ilk_uygulama/features/auth/presentation/bloc/auth_state.dart';
 import 'home_page.dart'; // <-- Ana sayfa import edildi
+import 'register_page.dart'; // <-- Kayıt sayfası import edildi
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -55,13 +56,28 @@ class LoginPage extends StatelessWidget {
                 if (state is AuthLoading)
                   const CircularProgressIndicator()
                 else
-                  ElevatedButton(
-                    onPressed: () {
-                      final username = _usernameController.text.trim();
-                      final password = _passwordController.text.trim();
-                      context.read<AuthCubit>().login(username, password);
-                    },
-                    child: const Text('Giriş Yap'),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          final username = _usernameController.text.trim();
+                          final password = _passwordController.text.trim();
+                          context.read<AuthCubit>().login(username, password);
+                        },
+                        child: const Text('Giriş Yap'),
+                      ),
+                      const SizedBox(height: 12),
+                      // Eklendi: Kayıt Ol sayfasına geçiş butonu
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                          );
+                        },
+                        child: const Text('Hesabınız yok mu? Kayıt olun'),
+                      ),
+                    ],
                   ),
               ],
             );
